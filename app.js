@@ -1,0 +1,38 @@
+const express = require('express')
+const cors = require('cors')
+const helmet = require('helmet')
+const morgan = require('morgan')
+const rateLimit = require('express-rate-limit')
+
+const authRoutes = require('./routes/authRoutes')
+const orderRoutes = require('./routes/orderRoutes')
+const paymentRoutes = require('./routes/paymentRoutes')
+
+const app = express()
+
+app.use(helmet())
+app.use(cors({ origin: true, credentials: true }))
+app.use(morgan('dev'))
+app.use('/api/auth/admin/login', rateLimit({ windowMs: 15 * 60 * 1000, max: 20 }))
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' }))
+app.use(express.json({ limit: '2mb' }))
+app.use(express.urlencoded({ extended: true }))
+
+app.get('/', (req, res) => {
+  res.json({ message: 'ILLAM-E-PUNJAB backend is running' })
+})
+
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true })
+})
+
+app.use('/api/auth', authRoutes)
+app.use('/api/orders', orderRoutes)
+app.use('/api/payments', paymentRoutes)
+
+app.use((err, req, res, next) => {
+  console.error(err)
+  res.status(500).json({ message: 'Internal server error' })
+})
+
+module.exports = app
