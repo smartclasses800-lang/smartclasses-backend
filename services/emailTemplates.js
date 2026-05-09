@@ -41,7 +41,7 @@ function paymentReceivedUserTemplate(order) {
       </table>
       <div style="background:#fff8e8;border:1px solid #f1d67a;border-radius:14px;padding:16px 18px;margin-bottom:20px;">
         <p style="margin:0;color:${brand.maroon};font-weight:700;">What happens next</p>
-        <p style="margin:8px 0 0;line-height:1.8;">We will prepare your book for dispatch. You will receive a second email when your shipment is sent for delivery along with the India Post tracker ID.</p>
+        <p style="margin:8px 0 0;line-height:1.8;">We will prepare your book for dispatch. You will receive a second email when your shipment is sent for delivery along with the India Post tracker ID so you can track your parcel.</p>
       </div>
       <p style="margin:0;line-height:1.8;">If you do not receive any confirmation email, contact us immediately at +91 85588 00797 or illamerpunjab@gmail.com.</p>
     `,
@@ -77,6 +77,7 @@ function trackerSentUserTemplate(order, trackerId) {
         <p style="margin:0;font-size:24px;font-weight:800;color:${brand.maroon};letter-spacing:0.04em;">${trackerId}</p>
       </div>
       <p style="margin:0 0 12px;line-height:1.8;">Please track your parcel using India Post with the tracker ID above.</p>
+      <a href="https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx" target="_blank" style="display:inline-block;background:${brand.maroon};color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-weight:700;margin-bottom:12px;">Track on India Post</a>
       <p style="margin:0;line-height:1.8;">If you do not receive the tracker email, call +91 85588 00797 or email illamerpunjab@gmail.com.</p>
     `,
   })

@@ -23,21 +23,32 @@ async function updateTrackerAndDispatch(req, res) {
   }
 
   order.trackerId = trackerId.trim()
-  order.status = status === 'delivered' ? 'delivered' : 'out_for_delivery'
-  order.dispatchedAt = new Date()
+  if (status === 'delivered') {
+    order.status = 'delivered'
+  } else if (!order.dispatchedAt) {
+    order.status = 'out_for_delivery'
+    order.dispatchedAt = new Date()
+  } else {
+    order.status = 'out_for_delivery'
+  }
+  const isDeliveryUpdate = status === 'delivered'
   order.trackerEmailSentAt = new Date()
   await order.save()
 
-  await Promise.allSettled([
-    sendEmail({
-      to: order.customer.email,
-      subject: 'Your ILLAM-E-PUNJAB tracker ID',
-      html: trackerSentUserTemplate(order, order.trackerId),
-    }),
-  ])
+  if (!isDeliveryUpdate) {
+    await Promise.allSettled([
+      sendEmail({
+        to: order.customer.email,
+        subject: 'Your ILLAM-E-PUNJAB tracker ID',
+        html: trackerSentUserTemplate(order, order.trackerId),
+      }),
+    ])
+  }
 
   return res.json({
-    message: 'Tracker email sent and order updated',
+    message: isDeliveryUpdate
+      ? 'Order marked as delivered'
+      : 'Tracker email sent and order updated',
     order,
   })
 }
