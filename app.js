@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit')
 const authRoutes = require('./routes/authRoutes')
 const orderRoutes = require('./routes/orderRoutes')
 const paymentRoutes = require('./routes/paymentRoutes')
+const { connectDatabase } = require('./config/db')
 
 const app = express()
 
@@ -17,6 +18,15 @@ app.use('/api/auth/admin/login', rateLimit({ windowMs: 15 * 60 * 1000, max: 20 }
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }))
 app.use(express.json({ limit: '2mb' }))
 app.use(express.urlencoded({ extended: true }))
+
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDatabase()
+    next()
+  } catch (error) {
+    next(error)
+  }
+})
 
 app.get('/', (req, res) => {
   res.json({ message: 'ILLAM-E-PUNJAB backend is running' })
