@@ -15,10 +15,12 @@ function isSrvDnsError(error) {
 }
 
 async function connectWithUri(mongoUri) {
-  return mongoose.connect(mongoUri, {
+  const connection = await mongoose.connect(mongoUri, {
     serverSelectionTimeoutMS: 10000,
     family: 4,
   })
+  console.log("Connected to MongoDB")
+  return connection
 }
 
 async function connectDatabase() {
@@ -58,9 +60,9 @@ async function connectDatabase() {
         console.log(`Mongo DNS resolver attempt: ${attempt.label}`)
       }
 
-      await connectWithUri(mongoUri)
+      const connection = await connectWithUri(mongoUri)
       await seedAdminAccount()
-      return
+      return connection
     } catch (error) {
       lastError = error
       if (!isSrvDnsError(error)) {
