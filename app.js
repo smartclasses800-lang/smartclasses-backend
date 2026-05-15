@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit')
 const authRoutes = require('./routes/authRoutes')
 const orderRoutes = require('./routes/orderRoutes')
 const paymentRoutes = require('./routes/paymentRoutes')
+const webhookRoutes = require('./routes/webhookRoutes')
 const { connectDatabase } = require('./config/db')
 
 const app = express()
@@ -15,7 +16,14 @@ app.use(helmet())
 app.use(cors({ origin: true, credentials: true }))
 app.use(morgan('dev'))
 app.use('/api/auth/admin/login', rateLimit({ windowMs: 15 * 60 * 1000, max: 20 }))
-app.use('/api/payments/webhook', express.raw({ type: 'application/json' }))
+app.use('/api/webhook', express.raw({ type: 'application/json' }), async (req, res, next) => {
+  try {
+    await connectDatabase()
+    next()
+  } catch (error) {
+    next(error)
+  }
+}, webhookRoutes)
 app.use(express.json({ limit: '2mb' }))
 app.use(express.urlencoded({ extended: true }))
 

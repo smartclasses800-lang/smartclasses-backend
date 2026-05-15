@@ -77,8 +77,8 @@ async function createOrder(req, res) {
   })
 }
 
-async function markOrderAsPaid(order, paymentData) {
-  const alreadyNotified = order.paymentConfirmationSentAt
+async function markOrderAsPaid(order, paymentData, { sendNotifications = true } = {}) {
+  const alreadyNotified = Boolean(order.paymentConfirmationSentAt)
 
   order.payment = {
     ...(typeof order.payment?.toObject === 'function' ? order.payment.toObject() : order.payment),
@@ -89,14 +89,18 @@ async function markOrderAsPaid(order, paymentData) {
     verifiedAt: new Date(),
   }
   order.status = 'paid'
-  order.paymentConfirmationSentAt = order.paymentConfirmationSentAt || new Date()
+
+  if (sendNotifications) {
+    order.paymentConfirmationSentAt = order.paymentConfirmationSentAt || new Date()
+  }
+
   await order.save()
 
-  if (!alreadyNotified) {
+  if (sendNotifications && !alreadyNotified) {
     await Promise.allSettled([
       sendEmail({
         to: order.customer.email,
-        subject: 'Payment Confirmed - ILLAM-E-PUNJAB',
+        subject: 'Payment Confirmed - Smart Book Store',
         html: paymentReceivedUserTemplate(order),
       }),
       sendEmail({
@@ -131,7 +135,23 @@ async function verifyPayment(req, res) {
     return res.status(404).json({ message: 'Order not found' })
   }
 
-  await markOrderAsPaid(order, { razorpay_order_id, razorpay_payment_id, razorpay_signature })
+  if (order.status !== 'paid') {
+    await markOrderAsPaid(
+      order,
+      { razorpay_order_id, razorpay_payment_id, razorpay_signature },
+      { sendNotifications: false },
+    )
+  } else {
+    order.payment = {
+      ...(typeof order.payment?.toObject === 'function' ? order.payment.toObject() : order.payment),
+      razorpayOrderId: razorpay_order_id,
+      razorpayPaymentId: razorpay_payment_id,
+      razorpaySignature: razorpay_signature,
+      status: 'paid',
+      verifiedAt: order.payment?.verifiedAt || new Date(),
+    }
+    await order.save()
+  }
 
   return res.json({
     message: 'Payment verified',
@@ -169,11 +189,15 @@ async function handleWebhook(req, res) {
     if (razorpayOrderId) {
       const order = await Order.findOne({ razorpayOrderId })
       if (order) {
-        await markOrderAsPaid(order, {
-          razorpay_order_id: razorpayOrderId,
-          razorpay_payment_id: razorpayPaymentId,
-          razorpay_signature: signature,
-        })
+        await markOrderAsPaid(
+          order,
+          {
+            razorpay_order_id: razorpayOrderId,
+            razorpay_payment_id: razorpayPaymentId,
+            razorpay_signature: signature,
+          },
+          { sendNotifications: true },
+        )
       }
     }
   }
