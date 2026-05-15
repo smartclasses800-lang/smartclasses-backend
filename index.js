@@ -7,7 +7,7 @@ async function startServer() {
 
   const port = process.env.PORT || 5000
   app.listen(port, () => {
-    console.log(`ILLAM-E-PUNJAB backend running on port ${port}`)
+    console.log(`Smart Classes backend running on port ${port}`)
   })
 }
 
