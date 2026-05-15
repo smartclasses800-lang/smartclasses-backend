@@ -19,7 +19,7 @@ function emailShell({ title, body }) {
             ${body}
           </div>
           <div style="padding:20px 32px;background:#faf7f7;border-top:1px solid #ecdede;font-size:13px;color:${brand.muted};line-height:1.6;">
-            <p style="margin:0 0 8px 0;">Support: +91 85588 00797 | illamerpunjab@gmail.com</p>
+            <p style="margin:0 0 8px 0;">Support: +91 85588 00797 | smartclasses800@gmail.com</p>
             <p style="margin:0;">This message was sent regarding your ILLAM-E-PUNJAB order.</p>
           </div>
         </div>
@@ -43,7 +43,7 @@ function paymentReceivedUserTemplate(order) {
         <p style="margin:0;color:${brand.maroon};font-weight:700;">What happens next</p>
         <p style="margin:8px 0 0;line-height:1.8;">We will prepare your book for dispatch. You will receive a second email when your shipment is sent for delivery along with the India Post tracker ID so you can track your parcel.</p>
       </div>
-      <p style="margin:0;line-height:1.8;">If you do not receive any confirmation email, contact us immediately at +91 85588 00797 or illamerpunjab@gmail.com.</p>
+      <p style="margin:0;line-height:1.8;">If you do not receive any confirmation email, contact us immediately at +91 80546 43829 or smartclasses800@gmail.com.</p>
     `,
   })
 }
@@ -78,7 +78,7 @@ function trackerSentUserTemplate(order, trackerId) {
       </div>
       <p style="margin:0 0 12px;line-height:1.8;">Please track your parcel using India Post with the tracker ID above.</p>
       <a href="https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx" target="_blank" style="display:inline-block;background:${brand.maroon};color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-weight:700;margin-bottom:12px;">Track on India Post</a>
-      <p style="margin:0;line-height:1.8;">If you do not receive the tracker email, call +91 85588 00797 or email illamerpunjab@gmail.com.</p>
+      <p style="margin:0;line-height:1.8;">If you do not receive the tracker email, call +91 80546 43829 or email smartclasses800@gmail.com.</p>
     `,
   })
 }
