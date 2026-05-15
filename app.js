@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes')
 const orderRoutes = require('./routes/orderRoutes')
 const paymentRoutes = require('./routes/paymentRoutes')
 const webhookRoutes = require('./routes/webhookRoutes')
+const productRoutes = require('./routes/productRoutes')
 const { connectDatabase } = require('./config/db')
 
 const app = express()
@@ -47,6 +48,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/payments', paymentRoutes)
+app.use('/api/products', productRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err)

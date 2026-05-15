@@ -7,9 +7,7 @@ const {
   paymentReceivedAdminTemplate,
 } = require('../services/emailTemplates')
 
-const PRODUCT_PRICES = {
-  'illam-e-punjab-book': Number(process.env.BOOK_PRICE_PAISE || 69900),
-}
+const { PRODUCT_PRICES, PRODUCT_CATALOG } = require('../config/products')
 
 function buildOrderReference() {
   return `IEP-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
