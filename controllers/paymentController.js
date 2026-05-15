@@ -7,6 +7,10 @@ const {
   paymentReceivedAdminTemplate,
 } = require('../services/emailTemplates')
 
+const PRODUCT_PRICES = {
+  'illam-e-punjab-book': Number(process.env.BOOK_PRICE_PAISE || 69900),
+}
+
 function buildOrderReference() {
   return `IEP-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
 }
@@ -21,13 +25,13 @@ async function createOrder(req, res) {
     return res.status(400).json({ message: 'Shipping address is incomplete' })
   }
 
-  if (!product?.sku || !product?.title || !product?.amount) {
+  if (!product?.sku || !product?.title) {
     return res.status(400).json({ message: 'Product details are incomplete' })
   }
 
-  const amount = Number(product.amount)
-  if (!Number.isFinite(amount) || amount <= 0) {
-    return res.status(400).json({ message: 'Invalid amount' })
+  const amount = PRODUCT_PRICES[product.sku]
+  if (!amount) {
+    return res.status(400).json({ message: 'Unknown product SKU' })
   }
 
   const razorpay = getRazorpayClient()
