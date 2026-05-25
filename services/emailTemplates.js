@@ -12,7 +12,7 @@ function emailShell({ title, body }) {
       <div style="max-width:680px;margin:0 auto;padding:24px;">
         <div style="background:${brand.paper};border:1px solid #ecdede;border-radius:20px;overflow:hidden;box-shadow:0 20px 40px rgba(123,24,27,0.08);">
           <div style="background:${brand.maroon};padding:28px 32px;color:#fff;">
-            <div style="display:inline-block;background:${brand.gold};color:${brand.maroon};padding:6px 12px;border-radius:999px;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;">ILLAM-E-PUNJAB</div>
+            <div style="display:inline-block;background:${brand.gold};color:${brand.maroon};padding:6px 12px;border-radius:999px;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;">smartbookstore</div>
             <h1 style="margin:16px 0 0;font-size:28px;line-height:1.2;">${title}</h1>
           </div>
           <div style="padding:32px;">
@@ -20,7 +20,7 @@ function emailShell({ title, body }) {
           </div>
           <div style="padding:20px 32px;background:#faf7f7;border-top:1px solid #ecdede;font-size:13px;color:${brand.muted};line-height:1.6;">
             <p style="margin:0 0 8px 0;">Support: +91 85588 00797 | smartclasses800@gmail.com</p>
-            <p style="margin:0;">This message was sent regarding your ILLAM-E-PUNJAB order.</p>
+            <p style="margin:0;">This message was sent regarding your smartbookstore order.</p>
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@ function paymentReceivedUserTemplate(order) {
   return emailShell({
     title: 'Payment Confirmed',
     body: `
-      <p style="font-size:16px;line-height:1.8;margin:0 0 16px;">Your payment for <strong>ILLAM-E-PUNJAB</strong> has been received successfully.</p>
+      <p style="font-size:16px;line-height:1.8;margin:0 0 16px;">Your payment for <strong>smartbookstore</strong> has been received successfully.</p>
       <table style="width:100%;border-collapse:collapse;margin:20px 0 24px;">
         <tr><td style="padding:10px 0;color:${brand.muted};">Name</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.customer.fullName}</td></tr>
         <tr><td style="padding:10px 0;color:${brand.muted};">Book</td><td style="padding:10px 0;font-weight:700;text-align:right;">${book.title || 'N/A'}</td></tr>
@@ -57,7 +57,7 @@ function paymentReceivedAdminTemplate(order) {
   return emailShell({
     title: 'New Paid Order Received',
     body: `
-      <p style="font-size:16px;line-height:1.8;margin:0 0 16px;">A new payment has been completed for <strong>ILLAM-E-PUNJAB</strong>.</p>
+      <p style="font-size:16px;line-height:1.8;margin:0 0 16px;">A new payment has been completed for <strong>smartbookstore</strong>.</p>
       <table style="width:100%;border-collapse:collapse;margin:20px 0 24px;">
         <tr><td style="padding:10px 0;color:${brand.muted};">Customer</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.customer.fullName}</td></tr>
         <tr><td style="padding:10px 0;color:${brand.muted};">Email</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.customer.email}</td></tr>
