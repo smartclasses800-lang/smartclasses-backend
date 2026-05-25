@@ -1,13 +1,45 @@
 const crypto = require('crypto')
 const Order = require('../models/Order')
+const Book = require('../models/Book')
 const { getRazorpayClient } = require('../services/razorpayService')
 const { sendEmail } = require('../services/emailService')
 const {
   paymentReceivedUserTemplate,
   paymentReceivedAdminTemplate,
 } = require('../services/emailTemplates')
+const { ensureBookSeeded } = require('../services/bookSeed')
 
-const { PRODUCT_PRICES, PRODUCT_CATALOG } = require('../config/products')
+function toBookSnapshot(book) {
+  return {
+    sku: book.sku,
+    title: book.title,
+    author: book.author,
+    cover: book.cover,
+    uri: book.uri,
+    pages: book.pages,
+    pricePaise: book.pricePaise,
+    bilangual: Boolean(book.bilangual),
+    onlyEnglish: Boolean(book.onlyEnglish),
+    onpunjabi: Boolean(book.onpunjabi),
+  }
+}
+
+async function findVerifiedBook(sku, expectedAmount, bookTitle = '') {
+  await ensureBookSeeded()
+  let book = await Book.findOne({ sku })
+  if (!book && bookTitle) {
+    book = await Book.findOne({ title: new RegExp(`^${String(bookTitle).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') })
+  }
+  if (!book) {
+    return { book: null, error: 'Book not found for the provided SKU' }
+  }
+
+  if (Number(book.pricePaise) !== Number(expectedAmount)) {
+    return { book: null, error: 'Book price mismatch' }
+  }
+
+  return { book }
+}
 
 function buildOrderReference() {
   return `IEP-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
@@ -27,9 +59,15 @@ async function createOrder(req, res) {
     return res.status(400).json({ message: 'Product details are incomplete' })
   }
 
-  const amount = PRODUCT_PRICES[product.sku]
-  if (!amount) {
+  await ensureBookSeeded()
+  const book = await Book.findOne({ sku: product.sku })
+  if (!book) {
     return res.status(400).json({ message: 'Unknown product SKU' })
+  }
+
+  const amount = Number(book.pricePaise)
+  if (!amount || amount <= 0) {
+    return res.status(400).json({ message: 'Invalid book price' })
   }
 
   const razorpay = getRazorpayClient()
@@ -40,7 +78,10 @@ async function createOrder(req, res) {
     currency: 'INR',
     receipt,
     notes: {
-      productTitle: product.title,
+      bookSku: book.sku,
+      bookTitle: book.title,
+      bookAuthor: book.author,
+      bookPricePaise: String(book.pricePaise),
       customerEmail: customer.email,
       medium: customer.medium,
     },
@@ -54,8 +95,8 @@ async function createOrder(req, res) {
     currency: 'INR',
     quantity: Number(product.quantity || 1),
     product: {
-      sku: product.sku,
-      title: product.title,
+      ...toBookSnapshot(book),
+      title: book.title,
     },
     customer: {
       fullName: customer.fullName,
@@ -81,6 +122,19 @@ async function createOrder(req, res) {
 
 async function markOrderAsPaid(order, paymentData, { sendNotifications = true } = {}) {
   const alreadyNotified = Boolean(order.paymentConfirmationSentAt)
+  const book = await Book.findOne({ sku: order.product?.sku })
+  if (!book) {
+    throw new Error('Book not found for paid order')
+  }
+
+  if (Number(book.pricePaise) !== Number(order.amount)) {
+    throw new Error('Book price mismatch for paid order')
+  }
+
+  order.product = {
+    ...toBookSnapshot(book),
+    title: book.title,
+  }
 
   order.payment = {
     ...(typeof order.payment?.toObject === 'function' ? order.payment.toObject() : order.payment),
@@ -137,6 +191,11 @@ async function verifyPayment(req, res) {
     return res.status(404).json({ message: 'Order not found' })
   }
 
+  const verification = await findVerifiedBook(order.product?.sku, order.amount, order.product?.title)
+  if (!verification.book) {
+    return res.status(409).json({ message: verification.error })
+  }
+
   if (order.status !== 'paid') {
     await markOrderAsPaid(
       order,
@@ -191,6 +250,11 @@ async function handleWebhook(req, res) {
     if (razorpayOrderId) {
       const order = await Order.findOne({ razorpayOrderId })
       if (order) {
+        const verification = await findVerifiedBook(order.product?.sku, order.amount, order.product?.title)
+        if (!verification.book) {
+          return res.status(409).json({ message: verification.error })
+        }
+
         await markOrderAsPaid(
           order,
           {

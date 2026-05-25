@@ -5,6 +5,7 @@ const morgan = require('morgan')
 const rateLimit = require('express-rate-limit')
 
 const authRoutes = require('./routes/authRoutes')
+const bookRoutes = require('./routes/bookRoutes')
 const orderRoutes = require('./routes/orderRoutes')
 const paymentRoutes = require('./routes/paymentRoutes')
 const webhookRoutes = require('./routes/webhookRoutes')
@@ -46,6 +47,7 @@ app.get('/api/health', (req, res) => {
 })
 
 app.use('/api/auth', authRoutes)
+app.use('/api/books', bookRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/payments', paymentRoutes)
 app.use('/api/products', productRoutes)

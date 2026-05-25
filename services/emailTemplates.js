@@ -29,12 +29,16 @@ function emailShell({ title, body }) {
 }
 
 function paymentReceivedUserTemplate(order) {
+  const book = order.product || {}
   return emailShell({
     title: 'Payment Confirmed',
     body: `
       <p style="font-size:16px;line-height:1.8;margin:0 0 16px;">Your payment for <strong>ILLAM-E-PUNJAB</strong> has been received successfully.</p>
       <table style="width:100%;border-collapse:collapse;margin:20px 0 24px;">
         <tr><td style="padding:10px 0;color:${brand.muted};">Name</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.customer.fullName}</td></tr>
+        <tr><td style="padding:10px 0;color:${brand.muted};">Book</td><td style="padding:10px 0;font-weight:700;text-align:right;">${book.title || 'N/A'}</td></tr>
+        <tr><td style="padding:10px 0;color:${brand.muted};">Author</td><td style="padding:10px 0;font-weight:700;text-align:right;">${book.author || 'N/A'}</td></tr>
+        <tr><td style="padding:10px 0;color:${brand.muted};">SKU</td><td style="padding:10px 0;font-weight:700;text-align:right;">${book.sku || 'N/A'}</td></tr>
         <tr><td style="padding:10px 0;color:${brand.muted};">Amount</td><td style="padding:10px 0;font-weight:700;text-align:right;">Rs. ${(Number(order.amount) / 100).toFixed(0)}</td></tr>
         <tr><td style="padding:10px 0;color:${brand.muted};">Order ID</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.razorpayOrderId}</td></tr>
         <tr><td style="padding:10px 0;color:${brand.muted};">Payment ID</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.payment?.razorpayPaymentId || 'N/A'}</td></tr>
@@ -49,6 +53,7 @@ function paymentReceivedUserTemplate(order) {
 }
 
 function paymentReceivedAdminTemplate(order) {
+  const book = order.product || {}
   return emailShell({
     title: 'New Paid Order Received',
     body: `
@@ -56,6 +61,8 @@ function paymentReceivedAdminTemplate(order) {
       <table style="width:100%;border-collapse:collapse;margin:20px 0 24px;">
         <tr><td style="padding:10px 0;color:${brand.muted};">Customer</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.customer.fullName}</td></tr>
         <tr><td style="padding:10px 0;color:${brand.muted};">Email</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.customer.email}</td></tr>
+        <tr><td style="padding:10px 0;color:${brand.muted};">Book</td><td style="padding:10px 0;font-weight:700;text-align:right;">${book.title || 'N/A'}</td></tr>
+        <tr><td style="padding:10px 0;color:${brand.muted};">SKU</td><td style="padding:10px 0;font-weight:700;text-align:right;">${book.sku || 'N/A'}</td></tr>
         <tr><td style="padding:10px 0;color:${brand.muted};">Amount</td><td style="padding:10px 0;font-weight:700;text-align:right;">Rs. ${(Number(order.amount) / 100).toFixed(0)}</td></tr>
         <tr><td style="padding:10px 0;color:${brand.muted};">Order ID</td><td style="padding:10px 0;font-weight:700;text-align:right;">${order.razorpayOrderId}</td></tr>
       </table>
@@ -68,10 +75,12 @@ function paymentReceivedAdminTemplate(order) {
 }
 
 function trackerSentUserTemplate(order, trackerId) {
+  const book = order.product || {}
   return emailShell({
     title: 'Your Shipment Tracker ID',
     body: `
       <p style="font-size:16px;line-height:1.8;margin:0 0 16px;">Your book has been dispatched and the tracker ID is now available.</p>
+      <p style="margin:0 0 12px;line-height:1.8;"><strong>Book:</strong> ${book.title || 'N/A'}<br /><strong>Author:</strong> ${book.author || 'N/A'}</p>
       <div style="background:#fff8e8;border:1px solid #f1d67a;border-radius:14px;padding:18px 20px;margin:18px 0 24px;">
         <p style="margin:0 0 8px;color:${brand.maroon};font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">Tracker ID</p>
         <p style="margin:0;font-size:24px;font-weight:800;color:${brand.maroon};letter-spacing:0.04em;">${trackerId}</p>
