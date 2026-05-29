@@ -86,7 +86,18 @@ function trackerSentUserTemplate(order, trackerId) {
         <p style="margin:0;font-size:24px;font-weight:800;color:${brand.maroon};letter-spacing:0.04em;">${trackerId}</p>
       </div>
       <p style="margin:0 0 12px;line-height:1.8;">Please track your parcel using India Post with the tracker ID above.</p>
-      <a href="https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx" target="_blank" style="display:inline-block;background:${brand.maroon};color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-weight:700;margin-bottom:12px;">Track on India Post</a>
+      <a href="https://www.indiapost.gov.in/" target="_blank" style="display:inline-block;background:${brand.maroon};color:#fff;text-decoration:none;padding:10px 20px;border-radius:8px;font-weight:700;margin-bottom:12px;">Track on India Post</a>
+      <div style="background:#fdf1f1;border:1px solid #f0c8c8;border-radius:14px;padding:16px 18px;margin-top:20px;font-family:Arial,Helvetica,sans-serif;">
+        <p style="margin:0 0 10px;color:${brand.maroon};font-weight:700;">How to track your parcel</p>
+        <ol style="margin:0;padding-left:20px;line-height:1.8;color:${brand.text};">
+          <li style="margin-bottom:6px;">Click the button above to open the India Post website.</li>
+          <li style="margin-bottom:6px;">Scroll down on the homepage — you will see a section called "Track and Trace Services". Click on it to open the tracking page.</li>
+          <li style="margin-bottom:6px;">Enter your 13-character tracking number in the input box (example: EK123456789IN). Your tracker ID is shown above in this email.</li>
+          <li style="margin-bottom:6px;">Complete the CAPTCHA verification on the page.</li>
+          <li style="margin-bottom:6px;">Click the "Search" button.</li>
+          <li style="margin-bottom:6px;">You will see the latest status, current location, and delivery updates for your parcel.</li>
+        </ol>
+      </div>
       <p style="margin:0;line-height:1.8;">If you do not receive the tracker email, call +91 80546 43829 or email smartclasses800@gmail.com.</p>
     `,
   })
