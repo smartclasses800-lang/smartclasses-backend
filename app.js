@@ -54,7 +54,14 @@ app.use('/api/products', productRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err)
-  res.status(500).json({ message: 'Internal server error' })
+  const statusCode = Number(err?.statusCode) || 500
+  const isProduction = process.env.NODE_ENV === 'production'
+  const message =
+    statusCode >= 500 && isProduction
+      ? 'Internal server error'
+      : err?.message || 'Internal server error'
+
+  res.status(statusCode).json({ message })
 })
 
 module.exports = app
