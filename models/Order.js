@@ -31,7 +31,7 @@ const paymentSchema = new mongoose.Schema(
     razorpaySignature: { type: String, default: '' },
     status: {
       type: String,
-      enum: ['created', 'paid', 'failed'],
+      enum: ['created', 'paid', 'failed', 'manual'],
       default: 'created',
     },
     verifiedAt: { type: Date },
