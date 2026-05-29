@@ -9,13 +9,21 @@ const {
 } = require('../services/emailTemplates')
 const { ensureBookSeeded } = require('../services/bookSeed')
 
+function getPrimaryBookImage(book) {
+  return [book?.images?.[0], book?.uri, book?.cover]
+    .map((value) => String(value || '').trim())
+    .find(Boolean) || ''
+}
+
 function toBookSnapshot(book) {
+  const primaryImage = getPrimaryBookImage(book)
+
   return {
     sku: book.sku,
     title: book.title,
     author: book.author,
-    cover: book.cover,
-    uri: book.uri,
+    cover: primaryImage,
+    uri: primaryImage,
     pages: book.pages,
     pricePaise: book.pricePaise,
     bilangual: Boolean(book.bilangual),

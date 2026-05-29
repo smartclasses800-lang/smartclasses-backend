@@ -5,12 +5,14 @@ const DEFAULT_BOOKS = [
     sku: 'illami-punjab',
     title: 'Illami Punjab',
     author: 'Rebecca Yarros',
-    cover: '/assets/demo.jpg',
+    images: [
+      'https://illamipunjabmcp.vercel.app/book.webp',
+      'https://images.unsplash.com/photo-1455885666463-3a0b1f77f49f?auto=format&fit=crop&w=1200&q=80',
+    ],
     pages: 320,
     pricePaise: 29900,
     description:
       'A gripping tale of love and resilience set in the heart of Punjab, where tradition meets modernity.',
-    uri: 'https://illamipunjabmcp.vercel.app/book.webp',
     bilangual: true,
     onlyEnglish: false,
     onpunjabi: false,
@@ -19,12 +21,14 @@ const DEFAULT_BOOKS = [
     sku: 'punjabi-bhasha-ate-vyakaran',
     title: 'Punjabi Bhasha Ate Vyakaran',
     author: 'Charlie Kirk',
-    cover: '/assets/demo.jpg',
+    images: [
+      'https://i.ibb.co/FqWzjWQN/book.jpg',
+      'https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?auto=format&fit=crop&w=1200&q=80',
+    ],
     pages: 250,
     pricePaise: 19900,
     description:
       'A comprehensive guide to Punjabi language and grammar, perfect for students and language enthusiasts.',
-    uri: 'https://i.ibb.co/FqWzjWQN/book.jpg',
     bilangual: true,
     onlyEnglish: false,
     onpunjabi: false,
@@ -33,12 +37,14 @@ const DEFAULT_BOOKS = [
     sku: 'punjab-police-constable-2026-district-armed-cadre',
     title: 'Punjab Police Constable 2026 District & Armed Cadre',
     author: 'Allen Levi',
-    cover: '/assets/demo.jpg',
+    images: [
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXLd0s6lxmSBqEUfKQI68Z7AG6zU2c0Nu44g&s',
+      'https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80',
+    ],
     pages: 300,
     pricePaise: 24900,
     description:
       'A comprehensive guide to the Punjab Police Constable exam, covering all important topics and practice questions.',
-    uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXLd0s6lxmSBqEUfKQI68Z7AG6zU2c0Nu44g&s',
     bilangual: false,
     onlyEnglish: true,
     onpunjabi: false,
@@ -68,20 +74,38 @@ function normalizePricePaise(payload) {
   return 0
 }
 
+function normalizeImages(payload = {}) {
+  const rawImages = Array.isArray(payload.images)
+    ? payload.images
+    : typeof payload.images === 'string'
+      ? payload.images.split(',')
+      : []
+
+  const fallback = [payload.uri, payload.cover]
+    .map((value) => String(value || '').trim())
+    .filter(Boolean)
+
+  const images = [...rawImages, ...fallback]
+    .map((value) => String(value || '').trim())
+    .filter(Boolean)
+
+  return [...new Set(images)]
+}
+
 function normalizeBookPayload(payload = {}) {
   const title = String(payload.title || '').trim()
   const sku = String(payload.sku || '').trim() || slugifyTitle(title)
   const bilangual = Boolean(payload.bilangual)
+  const images = normalizeImages(payload)
 
   return {
     sku,
     title,
     author: String(payload.author || '').trim(),
-    cover: String(payload.cover || '/assets/demo.jpg').trim() || '/assets/demo.jpg',
+    images,
     pages: Number.isFinite(Number(payload.pages)) ? Number(payload.pages) : 0,
     pricePaise: normalizePricePaise(payload),
     description: String(payload.description || '').trim(),
-    uri: String(payload.uri || '').trim(),
     bilangual,
     onlyEnglish: bilangual ? true : Boolean(payload.onlyEnglish),
     onpunjabi: bilangual ? true : Boolean(payload.onpunjabi),

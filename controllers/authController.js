@@ -1,25 +1,23 @@
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 const Admin = require('../models/Admin')
 
 async function loginAdmin(req, res) {
-  const { email, secretKey } = req.body || {}
+  const { email, password, secretKey } = req.body || {}
+  const loginPassword = String(password || secretKey || '').trim()
 
-  if (!email || !secretKey) {
-    return res.status(400).json({ message: 'Email and secret key are required' })
+  if (!email || !loginPassword) {
+    return res.status(400).json({ message: 'Email and password are required' })
   }
 
-  const adminEmail = String(process.env.ADMIN_EMAIL).toLowerCase().trim()
-  const adminSecretKey = String(process.env.ADMIN_SECRET_KEY)
-
   const inputEmail = String(email).toLowerCase().trim()
-  const inputSecretKey = String(secretKey).trim()
-
-  if (inputEmail !== adminEmail || inputSecretKey !== adminSecretKey) {
+  const admin = await Admin.findOne({ email: inputEmail })
+  if (!admin) {
     return res.status(401).json({ message: 'Invalid admin credentials' })
   }
 
-  const admin = await Admin.findOne({ email: adminEmail })
-  if (!admin) {
+  const passwordMatches = await bcrypt.compare(loginPassword, admin.passwordHash)
+  if (!passwordMatches) {
     return res.status(401).json({ message: 'Invalid admin credentials' })
   }
 

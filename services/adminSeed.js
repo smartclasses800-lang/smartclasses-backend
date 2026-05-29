@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs')
 const Admin = require('../models/Admin')
 
 async function seedAdminAccount() {
+  console.log('Seeding admin account...')
   const adminEmail = (process.env.ADMIN_EMAIL || 'johnkhore26@gmail.com').toLowerCase().trim()
   const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@12345'
 
